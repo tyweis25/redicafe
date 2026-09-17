@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coffee Shop - Order</title>
+<style>
+  :root {
+    --bg: #1e1630;
+    --bg-card: #2a2044;
+    --bg-input: #241b3a;
+    --text: #ece7f7;
+    --text-muted: #b3a5d1;
+    --accent: #a684e8;
+    --accent-hover: #b99bf0;
+    --border: #4a3a6e;
+    --success-bg: #33265a;
+    --success-text: #d8c9f7;
+    --unsure-bg: #3a2452;
+    --unsure-text: #e0b8f0;
+  }
+  body {
+    font-family: system-ui, sans-serif; max-width: 420px; margin: 40px auto; padding: 0 16px;
+    background: var(--bg); color: var(--text);
+  }
+  h1, h2 { color: var(--text); }
+  h1 { font-size: 1.4rem; }
+  label { display: block; margin-top: 14px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); }
+  input, select {
+    width: 100%; padding: 8px; margin-top: 4px; font-size: 1rem; box-sizing: border-box;
+    background: var(--bg-input); color: var(--text); border: 1px solid var(--border); border-radius: 4px;
+  }
+  #drink, #size, #milk,
+  #drink option, #size option, #milk option { text-transform: uppercase; }
+  .uc { text-transform: uppercase; }
+  input::placeholder { color: var(--text-muted); }
+  button {
+    margin-top: 20px; padding: 10px 16px; font-size: 1rem; width: 100%; cursor: pointer;
+    background: var(--accent); color: #1e1630; border: none; border-radius: 6px; font-weight: 600;
+  }
+  button:hover { background: var(--accent-hover); }
+  #confirmation {
+    margin-top: 20px; display: none; border-radius: 8px; overflow: hidden;
+    background: var(--success-bg); border-left: 4px solid var(--accent);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  }
+  #confirmation.show { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; animation: confirmation-in 0.25s ease-out; }
+  @keyframes confirmation-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .confirmation-icon { font-size: 1.6rem; line-height: 1; }
+  .confirmation-order-num { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+  .confirmation-details { color: var(--success-text); font-size: 0.95rem; margin-top: 2px; }
+  .confirmation-status {
+    display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 10px;
+    background: var(--accent); color: #1e1630; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em;
+  }
+  .confirmation-welcome { margin-top: 6px; font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
+
+  .faq-section { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 20px; }
+  .faq-input-row { display: flex; gap: 8px; margin-top: 8px; }
+  .faq-input-row input { flex: 1; }
+  .faq-input-row button { width: auto; padding: 8px 16px; margin-top: 0; }
+  .faq-threshold-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 0.8rem; color: var(--text-muted); }
+  .faq-threshold-row select { width: auto; margin-top: 0; padding: 4px 6px; font-size: 0.8rem; }
+  .faq-answer { margin-top: 14px; padding: 12px; border-radius: 6px; font-size: 0.95rem; }
+  .faq-answer.confident { background: var(--success-bg); color: var(--success-text); }
+  .faq-answer.unsure { background: var(--unsure-bg); color: var(--unsure-text); }
+  .faq-meta { margin-top: 6px; font-size: 0.75rem; color: var(--text-muted); }
+  .faq-loading { color: var(--text-muted); font-style: italic; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <h1>☕ Place Your Order</h1>
+  <form id="order-form">
+    <label for="customer">Name</label>
+    <input id="customer" required>
+
+    <label for="drink">Drink</label>
+    <select id="drink">
+      <option>latte</option>
+      <option>cold brew</option>
+      <option>cappuccino</option>
+      <option>americano</option>
+      <option>mocha</option>
+      <option>drip coffee</option>
+    </select>
+
+    <label for="size">Size</label>
+    <select id="size">
+      <option>small</option>
+      <option selected>medium</option>
+      <option>large</option>
+    </select>
+
+    <label for="milk">Milk</label>
+    <select id="milk">
+      <option value="none">none</option>
+      <option>whole</option>
+      <option>oat</option>
+      <option>almond</option>
+      <option>soy</option>
+    </select>
+
+    <button type="submit">Place Order</button>
+  </form>
+
+  <div id="confirmation"></div>
+
+  <div class="faq-section">
+    <h2>💬 Ask a Question</h2>
+    <p style="font-size:0.85rem; color:var(--text-muted);">Try something like "Is the shop open on Sundays?" — powered by semantic search, not keyword matching.</p>
+    <div class="faq-input-row">
+      <input id="faq-input" type="text" placeholder="Ask about hours, menu, delivery, parking...">
+      <button id="faq-submit">Ask</button>
+    </div>
+    <div class="faq-threshold-row">
+      <label for="faq-threshold" style="margin:0; font-weight:normal;">Confidence threshold (cosine distance, lower = stricter):</label>
+      <select id="faq-threshold">
+        <option value="0.5">0.50</option>
+        <option value="0.55">0.55</option>
+        <option value="0.6" selected>0.60 (default)</option>
+        <option value="0.65">0.65</option>
+        <option value="0.7">0.70</option>
+        <option value="0.8">0.80</option>
+      </select>
+    </div>
+    <div id="faq-result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('order-form');
+    const confirmation = document.getElementById('confirmation');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = {
+        customer: document.getElementById('customer').value,
+        drink: document.getElementById('drink').value,
+        size: document.getElementById('size').value,
+        milk: document.getElementById('milk').value,
+      };
+      const res = await fetch('/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      const milkSuffix = body.milk && body.milk !== 'none' ? ` with ${body.milk} milk` : '';
+      const visitCount = data.customer_total_orders;
+      const ordinal = n => {
+        const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      };
+      const welcome = visitCount > 1
+        ? `Welcome back, ${body.customer} — this is your ${ordinal(visitCount)} order here!`
+        : `Welcome, ${body.customer} — this is your first order here!`;
+
+      confirmation.innerHTML = `
+        <div class="confirmation-icon">✅</div>
+        <div>
+          <div class="confirmation-order-num">Order #${data.order_id}</div>
+          <div class="confirmation-details uc">${body.size} ${body.drink}${milkSuffix}</div>
+          <div class="confirmation-status">${data.status}</div>
+          <div class="confirmation-welcome">${welcome}</div>
+        </div>
+      `;
+      confirmation.classList.add('show');
+      form.reset();
+    });
+
+    // --- FAQ chat box ---
+    const faqInput = document.getElementById('faq-input');
+    const faqSubmit = document.getElementById('faq-submit');
+    const faqResult = document.getElementById('faq-result');
+    const faqThreshold = document.getElementById('faq-threshold');
+
+    async function askFaq() {
+      const question = faqInput.value.trim();
+      if (!question) return;
+
+      faqResult.innerHTML = '<p class="faq-loading">Searching...</p>';
+
+      try {
+        const res = await fetch('/faq/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question, threshold: parseFloat(faqThreshold.value) }),
+        });
+        const data = await res.json();
+
+        if (data.confident) {
+          faqResult.innerHTML = `
+            <div class="faq-answer confident">
+              ${data.answer}
+              <div class="faq-meta">matched: "${data.matched_question}" · distance: ${data.distance.toFixed(3)} · threshold used: ${data.threshold_used}</div>
+            </div>`;
+        } else {
+          faqResult.innerHTML = `
+            <div class="faq-answer unsure">
+              I'm not confident I have a good answer to that. Closest topic: "${data.matched_question ?? 'n/a'}"
+              <div class="faq-meta">distance: ${data.distance !== null ? data.distance.toFixed(3) : 'n/a'} · threshold used: ${data.threshold_used} (above threshold)</div>
+            </div>`;
+        }
+      } catch (err) {
+        faqResult.innerHTML = '<p class="faq-loading">Something went wrong - check the server logs.</p>';
+      }
+    }
+
+    faqSubmit.addEventListener('click', askFaq);
+    faqInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') askFaq();
+    });
+  </script>
+</body>
+</html>
