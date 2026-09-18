@@ -95,5 +95,4 @@ full architecture discussion).
 - Free-tier Redis Cloud allows one database, so the coffee-shop and FAQ workloads share it,
   separated by key prefix rather than by separate databases (see the lab writeups for the
   production tradeoff this implies).
-- TLS is off because the free plan doesn't support it — noted explicitly rather than silently
-  worked around.
+- TLS is off because the free plan doesn't support it
