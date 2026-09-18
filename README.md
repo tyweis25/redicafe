@@ -1,8 +1,8 @@
-# RediCafé — Redis SE Interview Demo
+# RediCafé
 
 A working coffee-shop backend + a semantic FAQ search tool, built as a demo for a Redis
 Solutions Engineer interview. Covers Redis strings, hashes, lists, sorted sets, Pub/Sub,
-Streams, TTLs, and vector search (via RedisVL + sentence-transformers), all running against
+Streams, TTLs, and vector search (via RedisVL + sentence transformers), all running against
 a single Redis Cloud (free tier) database.
 
 ## What's here
