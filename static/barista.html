@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Coffee Shop - Barista Display</title>
+<title>RediCafé — Barista Display</title>
 <style>
   :root {
     --bg: #1e1630;
@@ -59,9 +59,19 @@
   #status-dot.connected { background: var(--accent); }
   #status-text { color: var(--text-muted); }
   .uc { text-transform: uppercase; }
+
+  .brand-header { text-align: center; margin-bottom: 28px; }
+  .brand-header .logo {
+    font-size: 1.9rem; font-weight: 800; letter-spacing: 0.02em; color: var(--accent);
+  }
+  .brand-header .tagline { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
 </style>
 </head>
 <body>
+  <div class="brand-header">
+    <div class="logo">☕ RediCafé</div>
+    <div class="tagline">Barista Display</div>
+  </div>
   <h1>🧑‍🍳 Barista Display <span id="status-dot"></span><span id="status-text" style="font-size:0.8rem; color:#888;">connecting...</span></h1>
 
   <div class="layout">
@@ -168,16 +178,26 @@
       // container - which is never destroyed - avoids that race entirely.
     }
 
-    document.getElementById('pickup-list').addEventListener('click', async (e) => {
+    document.getElementById('pickup-list').addEventListener('click', (e) => {
       const btn = e.target.closest('button.confirm-pickup');
       if (!btn) return;
       const id = btn.getAttribute('data-id');
-      btn.disabled = true;
-      await fetch(`/order/${id}/pickup_confirm`, { method: 'POST' });
-      // Optimistic local removal for a snappy UI - the WebSocket event
-      // will also trigger a full resync for any other connected screens.
+
+      // Remove from state and re-render immediately, BEFORE the network call -
+      // not after. The 1s countdown tick re-renders from pickupOrders
+      // independently of this click; if the removal happened only after
+      // awaiting fetch(), a tick landing in that window would rebuild the
+      // panel from the still-unchanged array and recreate a fresh, enabled
+      // button for this same order, silently undoing btn.disabled and making
+      // the click appear to have done nothing.
       pickupOrders = pickupOrders.filter(o => o.id !== id);
       renderPickup();
+
+      // Fire-and-forget the actual confirmation - the UI has already moved on.
+      fetch(`/order/${id}/pickup_confirm`, { method: 'POST' }).catch(() => {
+        // If this fails, the next 5s poll or WebSocket event will resync the
+        // panel from the server's actual state.
+      });
     });
 
     async function loadPickup() {

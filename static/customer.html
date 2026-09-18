@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Coffee Shop - Order</title>
+<title>RediCafé — Order</title>
 <style>
   :root {
     --bg: #1e1630;
@@ -68,9 +68,19 @@
   .faq-answer.unsure { background: var(--unsure-bg); color: var(--unsure-text); }
   .faq-meta { margin-top: 6px; font-size: 0.75rem; color: var(--text-muted); }
   .faq-loading { color: var(--text-muted); font-style: italic; margin-top: 10px; }
+
+  .brand-header { text-align: center; margin-bottom: 28px; }
+  .brand-header .logo {
+    font-size: 1.9rem; font-weight: 800; letter-spacing: 0.02em; color: var(--accent);
+  }
+  .brand-header .tagline { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
 </style>
 </head>
 <body>
+  <div class="brand-header">
+    <div class="logo">☕ RediCafé</div>
+    <div class="tagline">Coffee Shop Order Queue</div>
+  </div>
   <h1>☕ Place Your Order</h1>
   <form id="order-form">
     <label for="customer">Name</label>
@@ -108,7 +118,7 @@
   <div id="confirmation"></div>
 
   <div class="faq-section">
-    <h2>💬 Ask a Question</h2>
+    <h2>💬 FAQ</h2>
     <p style="font-size:0.85rem; color:var(--text-muted);">Try something like "Is the shop open on Sundays?" — powered by semantic search, not keyword matching.</p>
     <div class="faq-input-row">
       <input id="faq-input" type="text" placeholder="Ask about hours, menu, delivery, parking...">
