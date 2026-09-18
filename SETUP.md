@@ -32,7 +32,7 @@ noted.
 
 ```bash
 git clone https://github.com/tyweis25/redicafe.git
-cd redicache
+cd redicafe
 ```
 (or download/unzip the project files if you're not using git)
 
@@ -104,7 +104,7 @@ uvicorn app:app --reload
 Wait for these two lines in the terminal before continuing:
 ```
 FAQ embedding model loaded.
-Order event delivery: Redis Pub/Sub (PUBLISH/SUBSCRIBE on 'order_updates')
+Order event delivery: Redis Streams (XADD/XREAD on 'orders:stream')
 ```
 
 ## 10. Open the app
@@ -114,11 +114,12 @@ In your browser, open two tabs:
 - **Barista screen:** http://localhost:8000/barista.html
 
 Place an order on the customer screen and watch it appear instantly on the barista screen
-— that live update is the Redis Pub/Sub → WebSocket bridge working.
+— that live update is the Redis Streams → WebSocket bridge working (switch
+`ORDER_EVENT_METHOD` to `pubsub` in `.env` to try the alternative delivery mechanism).
 
 ## 11. Try the FAQ search
 
-On the customer screen, use the "Ask a Question" box — try "Is the shop open on Sundays?"
+On the customer screen, use the "FAQ" box — try "Is the shop open on Sundays?"
 It should return a confident answer even though the wording doesn't match any FAQ entry's
 exact text (semantic search, not keyword matching).
 
