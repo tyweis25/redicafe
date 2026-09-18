@@ -5,8 +5,8 @@ Bridges:
   - Customer/barista HTTP requests <-> Redis (strings, hashes, lists, sorted sets)
   - Order events <-> WebSocket clients (barista screen), via one of two
     interchangeable delivery mechanisms selected by ORDER_EVENT_METHOD in .env:
-      "pubsub"  (default) - Redis Pub/Sub (PUBLISH/SUBSCRIBE), fire-and-forget
-      "streams"           - Redis Streams (XADD/XREAD), events persist in a log
+      "pubsub"            - Redis Pub/Sub (PUBLISH/SUBSCRIBE), fire-and-forget
+      "streams" (default) - Redis Streams (XADD/XREAD), events persist in a log
     Both implementations stay in this file regardless of which is active -
     see emit_order_event(), pubsub_listener(), and stream_listener() below.
 
@@ -48,7 +48,7 @@ ORDER_STREAM_KEY = "orders:stream"
 # "pubsub" (default) = PUBLISH/SUBSCRIBE, fire-and-forget, simplest, no history.
 # "streams" = XADD/XREAD, events persist in a log, survives listener restarts.
 # See the two listener functions below for the actual implementations of both.
-ORDER_EVENT_METHOD = os.environ.get("ORDER_EVENT_METHOD", "pubsub").strip().lower()
+ORDER_EVENT_METHOD = os.environ.get("ORDER_EVENT_METHOD", "streams").strip().lower()
 # How many past stream entries to replay to a barista screen when it connects.
 # This is the whole point of using Streams over Pub/Sub here: a barista who
 # logs in after orders were placed still receives them, because XADD entries
