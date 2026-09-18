@@ -31,7 +31,7 @@ noted.
 ## 3. Get the code
 
 ```bash
-git clone https://github.com/tyweis25/redicache.git
+git clone https://github.com/tyweis25/redicafe.git
 cd redicache
 ```
 (or download/unzip the project files if you're not using git)

@@ -1,8 +1,8 @@
-# RediCafé — Redis SE Interview Demo
+# RediCafé
 
 A working coffee-shop backend + a semantic FAQ search tool, built as a demo for a Redis
 Solutions Engineer interview. Covers Redis strings, hashes, lists, sorted sets, Pub/Sub,
-Streams, TTLs, and vector search (via RedisVL + sentence-transformers), all running against
+Streams, TTLs, and vector search (via RedisVL + sentence transformers), all running against
 a single Redis Cloud (free tier) database.
 
 ## What's here
@@ -95,5 +95,4 @@ full architecture discussion).
 - Free-tier Redis Cloud allows one database, so the coffee-shop and FAQ workloads share it,
   separated by key prefix rather than by separate databases (see the lab writeups for the
   production tradeoff this implies).
-- TLS is off because the free plan doesn't support it — noted explicitly rather than silently
-  worked around.
+- TLS is off because the free plan doesn't support it
